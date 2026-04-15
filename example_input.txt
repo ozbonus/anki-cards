@@ -3,8 +3,8 @@ I have an apple.
 
 書
 我在看一本書。
-no Japanese
+- no Japanese
 
 猫
 猫が寝ています。
-no Mandarin
+- no Mandarin

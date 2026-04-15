@@ -14,13 +14,13 @@ Read the file `input.txt` and generate `output.tsv`. Each group of lines in the 
 
 ## Input Format (`input.txt`)
 
-Notes are separated by one or more blank lines. Each note has up to three lines:
+Notes are separated by one or more blank lines. Each note contains:
 
 | Line | Required | Description |
 |------|----------|-------------|
 | 1 | **Yes** | Key word or phrase (the "term"). May be in any of the three languages. |
-| 2 | No | A contextual sentence using the term. If absent, you must generate a simple, natural sentence. |
-| 3 | No | Per-note instructions that override defaults (e.g., `no Japanese`, `no Mandarin`). |
+| 2 | No | A contextual sentence using the term. **May be in any of the three languages, independent of the term's language.** If absent, you must generate a simple, natural sentence. |
+| 3+ | No | Per-note instructions, each on its own line and prefixed with `-` or `*` (bulleted list). A note may include zero or many instruction lines. |
 
 **Example** (see `example_input.txt`):
 
@@ -30,21 +30,21 @@ I have an apple.
 
 書
 我在看一本書。
-no Japanese
+- no Japanese
 
 猫
 猫が寝ています。
-no Mandarin
+- no Mandarin
 ```
 
 ### Parsing Rules
 
-* Detect the source language of the term on line 1. Translate into the other two languages (unless excluded by line 3).
+* Detect the source language of the term on line 1. Translate into the other two languages (unless excluded by per-note instructions).
+* Detect the language of the contextual sentence on line 2 independently — it may differ from the term's language. Use it as-is for that language's context column and translate for the others.
 * If line 2 is missing, generate a short, natural contextual sentence that a native speaker would say. Provide the sentence in the source language of the term, then translate it along with everything else.
-* If line 2 is present but in a different language than line 1, use it as-is for that language's context column and translate for the others.
-* Line 3 instructions apply only to that note. Common directives:
-  * `no Japanese` — omit the 日本語 and 日本語_context columns (leave them empty).
-  * `no Mandarin` — omit the 台灣國語 and 台灣國語_context columns (leave them empty).
+* Lines starting with `-` or `*` are per-note instructions. They apply only to that note. A note may have multiple instruction lines. Common directives:
+  * `- no Japanese` — omit the 日本語 and 日本語_context columns (leave them empty).
+  * `- no Mandarin` — omit the 台灣國語 and 台灣國語_context columns (leave them empty).
   * Other directives may appear; follow them as stated.
 
 ---
@@ -125,11 +125,11 @@ I have an apple.
 
 書
 我在看一本書。
-no Japanese
+- no Japanese
 
 猫
 猫が寝ています。
-no Mandarin
+- no Mandarin
 ```
 
 **Output** (`output.tsv`):
